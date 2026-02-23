@@ -1,8 +1,28 @@
-const knightMoves = (currentPosition, goalPosition) => {
+function knightMoves(startPosition, goalPosition) {
+  const visited = new Set();
 
+  const queue = [];
+  queue.push([startPosition, [startPosition]]);
+  
+  while (queue.length > 0) {
+    const [current, path] = queue.shift();
+    visited.add(JSON.stringify(current));
+
+    if (compareTwoPosition(current, goalPosition)) {
+      console.log(`You made it in ${path.length} moves! Here's your path:`);
+      path.forEach(p => console.log(p));
+      return;
+    }
+   
+    const movesToQueue = generatedMoves(current)
+      .filter(move => !visited.has(JSON.stringify(move)))
+      .map(move => [move, [...path, move]]);
+
+    queue.push(...movesToQueue);
+  }
 };
 
-const generateEdges = position => {
+function generatedMoves(position) {
   const [row, col] = position;
   const moveList = [];
 
@@ -33,4 +53,12 @@ const generateEdges = position => {
   return moveList;
 };
 
-export default { knightMoves, generateEdges }
+function compareTwoPosition(move, moveToCompare) { 
+  return move[0] === moveToCompare[0] && move[1] === moveToCompare[1];
+}
+
+export default { 
+  knightMoves, 
+  generatedMoves, 
+  compareTwoPosition
+}
